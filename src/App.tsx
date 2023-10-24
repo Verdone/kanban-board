@@ -1,19 +1,44 @@
 import "./App.css";
+import { useState } from "react";
+import { tasks as initialTasks, statuses, Task } from "./utils/data-tasks";
+import TaskCard from "./components/TaskCard";
 
-function App() {
-  const title = "Do market research";
-  const id = "BUS-1";
-  const points = 5;
+function App() { 
+
+  const [tasks, setTasks] = useState<Task[]>(initialTasks)
+  const columns = statuses.map((status) => {
+    const tasksInColumn = tasks.filter((task) => task.status === status)
+    return {
+      title: status,
+      tasks: tasksInColumn
+    }
+  })
+
+  const updateTask = (task: Task) => {
+    const updatedTasks = tasks.map((t) => {
+      return t.id === task.id ? task : t
+    })
+    setTasks(updatedTasks)
+  }
 
   return (
-    <div className="border rounded-lg px-2 m-2 bg-gray-50">
-      <div className="text-4xl py-2">{title}</div>
-      <div className="flex gap-4 justify-between py-2 text-gray-700">
-        <div>{id}</div>
-        <div>{points}</div>
-      </div>
-    </div>
+  <div className="flex divide-x">
+    {columns.map((column) => (  
+        <div>
+          <h2 className="text-3xl p-2 capitalize font-bold text-gray-500">{column.title}</h2>
+          {column.tasks.map((task) => (
+             <TaskCard 
+              task={task}
+              updateTask={updateTask}
+              />
+          ))}
+        </div>
+    ))}
+  </div>
   );
+
+
+
 }
 
 export default App;
